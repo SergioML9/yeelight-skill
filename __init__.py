@@ -23,7 +23,7 @@ class YeelightSkill(MycroftSkill):
 
 
         # Initialize working variables used within the skill.
-        self.bulb = Bulb("192.168.0.5")        
+        self.bulb = Bulb("192.168.0.5")
 
     # The "handle_xxxx_intent" function is triggered by Mycroft when the
     # skill's intent is matched.  The intent is defined by the IntentBuilder()
@@ -36,20 +36,17 @@ class YeelightSkill(MycroftSkill):
     #   'Hello world'
     #   'Howdy you great big world'
     #   'Greetings planet earth'
-    @intent_handler(IntentBuilder("").require("Hello").require("World"))
-    def handle_hello_world_intent(self, message):
-        # In this case, respond by simply speaking a canned response.
-        # Mycroft will randomly speak one of the lines from the file
-        #    dialogs/en-us/hello.world.dialog
-        self.speak_dialog("hello.world")
+    @intent_handler(IntentBuilder("").require("Switch").require("Bulb").require("State"))
+    def handle_switch_yeelight_bulb(self, message):
+        
+        if message.data["State"] == "on":
+            self.bulb.turn_on()
+            self.speak_dialog("bulb.switch", data={"state": "on"})
 
-    @intent_handler(IntentBuilder("").require("Count").require("Dir"))
-    def handle_count_intent(self, message):
-        if message.data["Dir"] == "up":
-            self.count += 1
-        else:  # assume "down"
-            self.count -= 1
-        self.speak_dialog("count.is.now", data={"count": self.count})
+        elif message.data["State"] == "off":
+            self.bulb.turn_off()
+            self.speak_dialog("bulb.switch", data={"state": "off"})
+
 
     # The "stop" method defines what Mycroft does when told to stop during
     # the skill's execution. In this case, since the skill's functionality
