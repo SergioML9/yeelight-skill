@@ -23,7 +23,7 @@ class YeelightSkill(MycroftSkill):
 
 
         # Initialize working variables used within the skill.
-        self.bulb = Bulb("192.168.0.5")
+        self.bulb = Bulb("192.168.1.101")
 
     # The "handle_xxxx_intent" function is triggered by Mycroft when the
     # skill's intent is matched.  The intent is defined by the IntentBuilder()
@@ -38,7 +38,7 @@ class YeelightSkill(MycroftSkill):
     #   'Greetings planet earth'
     @intent_handler(IntentBuilder("").require("Switch").require("Bulb").require("State"))
     def handle_switch_yeelight_bulb(self, message):
-        
+
         if message.data["State"] == "on":
             self.bulb.turn_on()
             self.speak_dialog("bulb.switch", data={"state": "on"})
