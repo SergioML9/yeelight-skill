@@ -11,6 +11,8 @@ from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler
 from mycroft.util.log import LOG
 from yeelight import Bulb
+import miio
+import yaml
 
 # Each skill is contained within its own class, which inherits base methods
 # from the MycroftSkill class.  You extend this class as shown below.
@@ -21,9 +23,13 @@ class YeelightSkill(MycroftSkill):
     def __init__(self):
         super(YeelightSkill, self).__init__(name="YeelightSkill")
 
+        with open("config/devices.yml", 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
 
         # Initialize working variables used within the skill.
-        self.bulb = Bulb("192.168.1.101")
+        self.bulb = Bulb(cfg['ips']['yeelight_bulb'])
+        self.philips_lamp = miio.device(cfg['ips']['philips_lamp'], cfg['ips']['philips_lamp'])
+        self.vacuum_cleaner = miio.device(cfg['ips']['vacuum_cleaner'], cfg['ips']['vacuum_cleaner'])
 
     # The "handle_xxxx_intent" function is triggered by Mycroft when the
     # skill's intent is matched.  The intent is defined by the IntentBuilder()
@@ -36,7 +42,7 @@ class YeelightSkill(MycroftSkill):
     #   'Hello world'
     #   'Howdy you great big world'
     #   'Greetings planet earth'
-    @intent_handler(IntentBuilder("").require("Switch").require("Bulb").require("State"))
+    @intent_handler(IntentBuilder("YeelightBulb").require("Switch").require("Bulb").require("State"))
     def handle_switch_yeelight_bulb(self, message):
 
         if message.data["State"] == "on":
@@ -47,6 +53,23 @@ class YeelightSkill(MycroftSkill):
             self.bulb.turn_off()
             self.speak_dialog("bulb.switch", data={"state": "off"})
 
+
+    @intent_handler(IntentBuilder("PhilipsLamp").require("Switch").require("Bedroom").require("Bulb").require("State"))
+    def handle_switch_philips_lamp(self, message):
+
+        if message.data["State"] == "on":
+            self.philips_lamp.send('set_power', ['on'])
+            self.speak_dialog("bulb.switch", data={"state": "on"})
+
+        elif message.data["State"] == "off":
+            self.philips_lamp.send('set_power', ['off'])
+            self.speak_dialog("bulb.switch", data={"state": "off"})
+
+    @intent_handler(IntentBuilder("CleanHouse").require("Clean"))
+    def handle_clean_house(self, message):
+
+        self.vacuum_cleaner.send("app_start")
+        self.speak_dialog("clean.started")
 
     # The "stop" method defines what Mycroft does when told to stop during
     # the skill's execution. In this case, since the skill's functionality
