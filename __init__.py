@@ -23,13 +23,19 @@ class YeelightSkill(MycroftSkill):
     def __init__(self):
         super(YeelightSkill, self).__init__(name="YeelightSkill")
 
-        with open("config/devices.yml", 'r') as ymlfile:
-            cfg = yaml.load(ymlfile)
+        # Check and then monitor for credential changes
+        self.settings.set_changed_callback(self.on_websettings_changed)
 
         # Initialize working variables used within the skill.
-        self.bulb = Bulb(cfg['ips']['yeelight_bulb'])
-        self.philips_lamp = miio.device(cfg['ips']['philips_lamp'], cfg['ips']['philips_lamp'])
-        self.vacuum_cleaner = miio.device(cfg['ips']['vacuum_cleaner'], cfg['ips']['vacuum_cleaner'])
+        self.bulb = Bulb(self.settings.get("yeelight_bulb_ip", ""))
+        self.philips_lamp = miio.device(self.settings.get("philips_lamp_ip", ""), self.settings.get("philips_lamp_token", ""))
+        self.vacuum_cleaner = miio.device(self.settings.get("vacuum_cleaner_ip", ""), self.settings.get("vacuum_cleaner_token", ""))
+
+    def on_websettings_changed(self):
+        self.bulb = Bulb(self.settings.get("yeelight_bulb_ip", ""))
+        self.philips_lamp = miio.device(self.settings.get("philips_lamp_ip", ""), self.settings.get("philips_lamp_token", ""))
+        self.vacuum_cleaner = miio.device(self.settings.get("vacuum_cleaner_ip", ""), self.settings.get("vacuum_cleaner_token", ""))
+
 
     # The "handle_xxxx_intent" function is triggered by Mycroft when the
     # skill's intent is matched.  The intent is defined by the IntentBuilder()

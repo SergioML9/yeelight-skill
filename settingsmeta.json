@@ -1,0 +1,47 @@
+{
+    "name": "Xiaomi Devices",
+    "skillMetadata": {
+        "sections": [
+            {
+                "name": "IPS",
+                "fields": [
+                    {
+                        "name": "yeelight_bulb_ip",
+                        "type": "text",
+                        "label": "Yeelight Bulb",
+                        "value": ""
+                    },
+                    {
+                        "name": "philips_lamp_ip",
+                        "type": "text",
+                        "label": "Philips Lamp",
+                        "value": ""
+                    },
+                    {
+                        "name": "vacuum_cleaner_ip",
+                        "type": "text",
+                        "label": "Vacuum Cleaner",
+                        "value": ""
+                    }
+                ]
+            },
+            {
+                "name": "Tokens",
+                "fields": [
+                    {
+                        "name": "philips_lamp_token",
+                        "type": "text",
+                        "label": "Philips Lamp",
+                        "value": ""
+                    },
+                    {
+                        "name": "vacuum_cleaner_token",
+                        "type": "text",
+                        "label": "Vacuum Cleaner",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    }
+}
